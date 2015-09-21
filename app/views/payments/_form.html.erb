@@ -1,0 +1,66 @@
+<script type="text/javascript">
+$(document).ready(function () {
+   $('#secure_image').css("margin-left","400px");
+});
+
+</script>
+<div class="alert alert-success">
+ <div class="control-group">
+          
+      <div class="controls">
+          <%= "Genre:" %><%=   "#{@author.genres}" %><br/>
+          <% if @author && @author.genre_price.present? %>
+              <%= "Price:" %>
+              <%=  "#{@author.genre_price}" %>
+          <% else %>
+              <%= "No Price set against this genres."%>
+          <% end %>
+          <!-- Flat Price:<%#= f.select(:genres_flat_price, GENRES_CONSTANT::FLAT_PRICE) %> -->
+          <!-- Bargain Price:<%#= f.select(:genres_bargain_price, GENRES_CONSTANT::BARGAIN_PRICE) %> -->
+      </div>
+  </div>
+</div>
+   
+<%# if @genres_price %>
+  <%= form_for @payment, :url=> author_book_payments_path(@author), :html => { :class => 'form-horizontal payment-form' } do |f| %>
+
+    <div class="bs-docs-example">
+        
+        
+
+        <table >
+          <tr>
+            <td><div class="control-group">
+                  <%= f.label "card_number", "Credit Card Number ", :class => 'control-label' %>
+                  <div class="controls">
+                    <%= f.text_field :card_numbre, :class=>"card_number"%>
+                  </div>
+                </div>
+            </td>
+            <td><span id="secure_image">
+                  <%= image_tag('rapidssl.png')%>
+                </span>
+            </td>
+          </tr>        
+        </table>
+        <div class="control-group">
+            <%= f.label :card_code, "Security Code on Card (CVV)", :class => 'control-label' %>
+            <div class="controls">
+              <%= f.text_field :card_code,:class=>"card-cvc" %>
+            </div>
+        </div>
+        <div class="control-group">
+          <%= label_tag :card_exp_date, "Card Expiration", :class => 'card_exp_date control-label' %>
+          <div class="controls">
+          <%= select_month nil, {add_month_numbers_true: true}, {name: nil, id: "card_month", style: "width: 14%;"}%>
+          <%= select_year nil, {start_year: Date.today.year, end_year: Date.today.year+15}, {name: nil, id: "card_year", style: "width: 8%;"}%>
+          </div>
+        </div>
+
+    <div class="form-actions">
+      <input type="button"  class = 'btn btn-primary ' value="Submit" id="validate-and-submit-card-info">
+      <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                  author_book_payments_path(@author), :class => 'btn' %>
+    </div>
+  <% end %>
+<%# end %>

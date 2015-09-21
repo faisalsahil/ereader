@@ -1,0 +1,29 @@
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        
+    });
+</script>
+<div id="setting-list_grouping" class="row-fluid  well" style="padding: 24px 35px 2px 14px !important; width:809px;">
+	<%= form_for @mclist, :html => { :class => 'form-horizontal' } do |f| %>
+	    <div class="control-group">
+	      <!-- <div class="controls"> -->
+	      	<b><%= "Select List: " %></b>
+	        <% if @listloaded.present? %>
+	            <%= f.select :list_id, [['Select List', '']].concat(@listloaded.inject([]) { |arr, e| arr << [e["name"], e["id"]] }) %>
+	        	<input type="button" class = 'btn btn-primary btn-mini', value="Get Grouping"
+	        	 id="get-grouping" >
+	        <% end %>
+	      <!-- </div> -->
+	    </div>
+	    <br/>
+	    <% if @groups.present? %>    
+		    <div class="control-group">
+	    		<b><%= "Grouping: " %>
+	        	</b><%= f.select :grouping_id, [['Select grouping', '']].concat(@groups.inject([]) { |arr, e| arr << [e[:name], e[:id]] }) %>
+	        	<br/><br/>	
+	       		 <%= f.submit :submit, :class => 'btn btn-primary pull-right'%>
+	   		</div>
+	    <% end %>
+	<% end %>
+</div>

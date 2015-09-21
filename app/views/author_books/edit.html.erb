@@ -1,0 +1,34 @@
+<%#- model_class = AuthorBook -%>
+<!-- <div class="page-header">
+ -->  <%#=t '.title', :default => [:'helpers.titles.edit', 'Edit %{model}'], :model => model_class.model_name.human.titleize %>
+<!-- </div> -->
+<%#= render :partial => 'form' %>
+<h3>Update payment status</h3>
+<%= form_for @author_book,:url=>update_status_author_book_path(@author_book), :html => { :class => 'form-horizontal' } do |f| %>
+   <% if @author_book.errors.any? %>
+    <div id="errorExplanation" class="alert alert-error">
+      <a class="close" data-dismiss="alert">&#215;</a>
+      <h4><%= pluralize(@author_book.errors.count, "error") %> prohibited this book from being saved:</h4>
+      <ul>
+      <% @schedule.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+   <div class="controls">
+        <div id="control-groups" class="input-append date">
+          <%= f.label "Change Status:", :class=>"control-label" %>
+          <div class="controls">
+          	<%= f.select(:payment_status, GENRES_CONSTANT::PAYMENT_STATUS) %>
+          </div>
+        </div>
+    </div>
+
+   <div class="form-actions">
+    <%= f.button :submit, :class => 'btn btn-primary' %>
+    <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                author_books_path, :class => 'btn' %>
+  </div>
+<% end %>

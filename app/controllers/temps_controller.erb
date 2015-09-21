@@ -1,0 +1,126 @@
+def create
+ 	if params[:author_book].present?
+    	@author_book = AuthorBook.new(params[:author_book])
+        @author_book.status = "pending"
+        @author_book.payment_status = "None"
+        if @author_book.save
+          # ================= charge on hold ==================
+          @payment = Payment.find_by_author_book_id(@author_book.id)
+          puts "=====================id============================="
+          puts @author_book.id
+          @genres_price = Pricing.find_by_group_name(@author_book.genres)
+          @pb_price = params[:author_book][:pb_price].to_f
+          puts"==========================================="
+          puts @pb_price.class
+          if @pb_price == 0.00
+            @price = @genres_price.tier_1
+          elsif @pb_price > 0.01 && @pb_price <= 2.98
+                @price = @genres_price.tier_2
+          elsif @pb_price >= 2.99
+                @price = @genres_price.tier_3
+          end
+           # ================  update author record here ==================
+
+           # ================================================================
+          if @genres_price.present?
+            require "stripe"
+            Stripe.api_key = "sk_test_cWbI1fA0O5evvorlsXuD4C23"
+
+            response = Stripe::Charge.create(
+              # :key => "sk_test_cWbI1fA0O5evvorlsXuD4C23",
+              :amount => @price,
+              :currency => "usd",
+              :card => params[:author_book][:payment_attributes][:token], # obtained with Stripe.js
+              :description => @author_book.email,
+              :capture => false
+            )
+            @payment.charge_id = response["id"]
+            @payment.save!
+            @author_book.payment_status = "preAuth"
+            @author_book.genre_price = @price 
+            @author_book.save!
+            puts "=================== charge create successfully ==================="
+            puts response
+
+            flash[:notice] = " Your book successfully submit."
+            redirect_to new_author_book_path({:notice=>"successfull"})
+          else
+            flash[:notice] = "No price set against this genre."
+             @ret = GENRES_CONSTANT::Links_RETAILORS
+             @count = @ret.count
+            render :new
+          end
+          # ==================== end of charge on hold ====================
+        	# UserMailer.registration_confirmation(current_user,@author_book).deliver
+        	# redirect_to  new_author_book_payment_path(@author_book), :notice=>"Your Book Successfully Created.Please enter payment info."
+     	    # flash[:notice] = " Your book successfully submit."
+          # redirect_to new_author_book_path 
+      else
+        @ret = GENRES_CONSTANT::Links_RETAILORS
+        @count = @ret.count
+        render :new
+     	end
+    end
+end
+
+
+def update
+      if current_user && current_user.user_type=="admin"
+        @author_book = AuthorBook.find(params[:id])
+        @email = @author_book.email
+        @template = MandrillSetting.first.apr_tempate
+        @key = KeyMandrill.first
+         if @author_book.payment_status == "preAuth"
+            @charge = Payment.find_by_author_book_id(params[:id])
+            require "stripe"
+            Stripe.api_key = "sk_test_cWbI1fA0O5evvorlsXuD4C23"
+            ch = Stripe::Charge.retrieve(
+                :id => @charge.charge_id
+                )
+            response = ch.capture
+            if response["paid"] == true
+              m = Mandrill::API.new(@key.key)
+              book_name = @author_book.title
+              promotional_price = @author_book.pb_price
+              preferred_date = @author_book.scheduleing.schedule_date
+              promot_cost = @author_book.genre_price
+              @mandrill = MandrillSetting.first
+              if @mandrill.present?
+                 rendered = m.templates.render "#{@template}",[{:name => "book-name", :content => book_name},
+                                                       {:name => "promotopnal-price", :content => promotional_price},
+                                                       {:name => "preferred-date", :content => preferred_date},
+                                                       {:name => "promo-cost", :content => promot_cost}
+                                                     ]
+                 message = {
+                                :subject=> "Your Request Successfully Approved with Preferred date #{@author_book.preferred_date}",
+                                :from_name=> @mandrill.from_name,
+                                :from_email=> @mandrill.from_email,
+                                :to=>[{:email=> @email,:name =>  @author_book.name}],
+                                :html=>rendered['html']
+                            }
+                    sending = m.messages.send message
+                    if sending[0] && sending[0]["status"] == "sent"
+                        @author_book.status = "approved"
+                        @author_book.payment_status = "Approved"
+                        @author_book.save!
+                        flash[:notice] = "Successfully Approved."
+                        # redirect_to new_author_book_scheduleing_path(@author_book)
+                        redirect_to author_books_path
+                    end
+              else
+                flash[:error] ="Please enter mandrill settings first."
+                redirect_to new_apisetting_path
+              end
+            else
+              flash[:error] = "Card not Charge successfully."
+              redirect_to :back
+            end
+        else
+           flash[:notice] = "No payment method is available for this author. Please contact them for payment and update to Paid on the Schedule when payment is received."
+            redirect_to author_book_scheduleing_path(@author_book)
+        end
+     else
+        flash[:error] = "Please Login First."
+       redirect_to new_user_session_path
+     end
+end

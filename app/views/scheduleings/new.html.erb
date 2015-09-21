@@ -1,0 +1,38 @@
+<script type="text/javascript">
+  $(function() {
+    $('#datetimepicker1').datetimepicker({
+      format: "MM/dd/yyyy"
+    });
+  });
+</script>
+<!-- ,:url=>author_book_scheduleing_path(@author_book,@schedule) -->
+<h3>Schedule Book</h3>
+<%= form_for @schedule,:url=>author_book_scheduleings_path(@author_book), :html => { :class => 'form-horizontal' } do |f| %>
+   <% if @author_book.errors.any? %>
+    <div id="errorExplanation" class="alert alert-error">
+      <a class="close" data-dismiss="alert">&#215;</a>
+      <h4><%= pluralize(@author_book.errors.count, "error") %> prohibited this book from being saved:</h4>
+      <ul>
+      <% @schedule.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+   <div class="controls">
+        <div id="datetimepicker1" class="input-append date">
+          <%= f.text_field :schedule_date, data: {format: "MM/dd/yyyy"} %>
+          <span class="add-on">
+            <i data-time-icon="icon-date" data-date-icon="icon-calendar">
+            </i>
+          </span>
+        </div>
+    </div>
+
+   <div class="form-actions">
+    <%= f.button :submit, :class => 'btn btn-primary' %>
+    <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                author_books_path, :class => 'btn' %>
+  </div>
+<% end %>

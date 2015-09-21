@@ -1,0 +1,79 @@
+<%- model_class = AuthorBook -%>
+<div class="alert alert-info" style="width: 93%;">
+  <h3><%=t '.title', :default => model_class.model_name.human.pluralize.titleize %></h3>
+</div>
+<% if @author_books.first.present? %>
+<div class="well" style="width: 94%;">
+<table class="table table-striped" id="books">
+  <thead style="background-color: lightgrey;">
+    <tr>
+      <th><%= model_class.human_attribute_name(:name) %></th>
+      <th><%= model_class.human_attribute_name(:title) %></th>
+      <th><%= model_class.human_attribute_name(:genres) %></th>
+      <th><%= model_class.human_attribute_name(:preferred_start_date)%></th>
+      <th><%= model_class.human_attribute_name(:preferred_end_date) %></th>
+      <th><%= "Schedule date" %></th>
+      <th><%= model_class.human_attribute_name(:flexible) %></th>
+      <th><%=t '.actions', :default => t("helpers.actions") %></th>
+      <% if @list_template.present? %>
+      <th><%= "Reject Book"%></th>
+      <% end %>
+    </tr>
+  </thead>
+  <tbody>
+    <% @author_books.each do |author_book| %>
+      <tr>
+        <!-- <td><%#= link_to author_book.id, author_book_path(author_book) %></td> -->
+        <td><%= author_book.author_name %></td>
+        <td><%= author_book.title %></td>
+        <td><%= author_book.genres %></td>
+        <td>
+            <% preferred_date = author_book.preferred_start_date.strftime('%m/%d/%Y') %>
+            <%= preferred_date %>
+            <%= link_to "<i class='icon-pencil'></i>".html_safe, edit_date_author_book_path(author_book) %>
+        </td>
+        <td>
+            <% preferred_end_date = author_book.preferred_end_date.strftime('%m/%d/%Y') %>
+            <%= preferred_end_date %>
+            <%= link_to "<i class='icon-pencil'></i>".html_safe, edit_date_author_book_path(author_book) %>
+        </td>
+        <% if author_book.scheduleing && author_book.scheduleing.schedule_date.present? %>
+          <td>
+            <% schedule_date = author_book.scheduleing.schedule_date.strftime('%m/%d/%Y') %>
+            <%= schedule_date %></td>
+        <% else %>
+          <td></td>
+        <% end %>
+        <td><%= author_book.flexible %></td>
+
+
+        <td>
+          <%= link_to "Review", author_book_path(author_book), class: 'btn btn-mini btn-primary', remote: true %>
+          <% if !author_book.scheduleing.present? %>
+            <%= link_to "Schedule", new_author_book_scheduleing_path(author_book), :class => 'btn btn-mini btn-warning' %>
+          <% else %>
+            <%= link_to "Approve", author_book_path(author_book), method: "put", :class => 'btn btn-mini btn-success' %>
+          <% end %>
+        </td>
+        <td>
+          <% if @list_template.present? %>
+            <%= form_for author_book,:url=>reject_status_author_book_path(author_book), :method => :put do |f|%>
+               <%= f.select :template, [['Select Template', '']].concat(@list_template), :style=>"width: 53%;" %>
+              <%= submit_tag "Reject", :class=>"btn btn-danger btn-mini" %>
+            <%end%>
+          <%end%>
+          <%#= link_to "Reject", , method: "put", :class => 'btn btn-mini btn-danger' %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<div id="settings_wrapper">
+</div>
+<% else %>
+  <div class="alert alert-info" style="width:93%;">No Book Is In Pending state.</div>
+<% end %>
+
+ 
+

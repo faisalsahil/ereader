@@ -1,0 +1,41 @@
+<div class="page-header payment-info">
+  <h3>Payment Information</h3>
+</div>
+
+ <div class="credit-card-fields" style="display:none;">
+  <div class="well">
+    <div class="alert alert-info">
+        <p>Please enter your payment information below. You will not be charged until your book is approved. The price for your promo is <span class="genres-price-alert"></span>
+        </p>
+    </div>
+    <%= f.fields_for :payment do |pay| %>
+        <div class="control-group">
+          <%= pay.label "card_number", "Credit Card Number", :class => 'control-label' %>
+          <div class="controls">
+            <%= pay.text_field :card_numbre, :class=>"card_number"%>
+          </div>
+        </div>
+        <div class="control-group">
+            <%= pay.label :card_code, "Security Code on Card (CVV)", :class => 'control-label' %>
+            <div class="controls">
+              <%= pay.text_field :card_code,:class=>"card-cvc" %>
+            </div>
+        </div>
+        <div class="control-group">
+          <%= label_tag :card_exp_date, "Card Expiration", :class => 'card_exp_date control-label' %>
+          <div class="controls">
+          <%= select_month nil, {add_month_numbers_true: true}, {name: nil, id: "card_month", style: "width: 15%;"}%>
+          <%= select_year nil, {start_year: Date.today.year, end_year: Date.today.year+15}, {name: nil, id: "card_year", style: "width: 8%;"}%>
+          </div>
+        </div>
+    <% end %>
+  </div>
+  <div class="form-actions submit-action">
+    <%#= f.button :submit,:class => 'btn btn-primary' %>
+    <button type="button" class = 'btn step-1 btn-warning'>Go Back</button>
+    <input type="button"  class = 'btn btn-primary ' value="Submit" id="validate-and-submit-card-info">
+    
+    <%#= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                author_books_path, :class => 'btn' %>
+  </div>
+</div>

@@ -1,0 +1,14 @@
+<script type="text/javascript">
+  $(document).ready(function () {
+    $('#datetimepicker1').datetimepicker({
+      language: 'pt-BR'
+    });
+    $('#datetimepicker2').datetimepicker({
+      language: 'pt-BR'
+    });
+  });
+</script>
+<div class="alert alert-info">
+  <h3>Select Date Range</h3>
+</div>
+<%= render 'rangeform', :url=> report_scheduleings_path %>

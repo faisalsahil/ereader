@@ -1,0 +1,22 @@
+
+<!-- ////////////////////// ///////////////////////////////////////////////-->
+
+<div class="well">
+  <%= form_for @mclist,:url=>load_group1_mclist_path(@mclist), :html => { :class => 'form-horizontal' } do |f| %>
+    
+  <div class="control-group">
+      <div class="controls">
+        <% if @arr.present? %>
+            <b><%= "Select Grouping: " %></b><%= f.select :grouping_id, [['Select grouping', '']].concat(@arr.inject([]) { |arr, e| arr << [e[:name], e[:id]] }) %>
+        <% end %>
+      <%= f.submit "Submit", :class => 'btn btn-primary' %>
+      </div>
+    </div>
+   
+   <!--  <div class="form-actions">
+      <%#= f.button :submit, :class => 'btn btn-primary', :value=>"Get Groupings" %>
+      <%#= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                  root_url, :class => 'btn' %>
+    </div> -->
+  <% end %>
+</div>

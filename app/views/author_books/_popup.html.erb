@@ -1,0 +1,84 @@
+ <%- model_class = AuthorBook -%>
+ <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">Author's Book Detail</h4>
+        </div>
+        <div class="modal-body"><div class="sasss"><%= params[:author_book] %></div> 
+          <!-- <dl class="dl-horizontal"> -->
+            <table class="table table-striped">
+            <tr class="active"><td ><strong><%= model_class.human_attribute_name(:name) %>:</strong></td>
+            <td><%= @author_book.author_name %></td></tr>
+            <tr class="success"><td><strong><%= model_class.human_attribute_name(:email) %>:</strong></td>
+            <td><%= @author_book.email %></td></tr>
+            <tr class="active"><td><strong><%= model_class.human_attribute_name(:title) %>:</strong></td>
+            <td><%= @author_book.title %></td></tr>
+            <tr class="success"><td><strong><%= model_class.human_attribute_name(:author_name) %>:</strong></td>
+            <td><%= @author_book.author_name %></td></tr>
+            <tr class="active"><td><strong><%= model_class.human_attribute_name(:genres) %>:</strong></td>
+            <td><%= @author_book.genres %></td></tr></br>
+            <tr class="success">
+              <td>
+                <strong><%= model_class.human_attribute_name(:amazon_link) %>:</strong>
+              </td>
+              <td>
+                <a href=<%= "#{@author_book.amazon_link}" %> target="blank"><%="#{@author_book.amazon_link}"%></a>
+              </td>
+
+            </tr>
+            <tr class="active"><td><strong><%= model_class.human_attribute_name(:amazon_star_rating) %>:</strong></td>
+            <td><%= @author_book.amazon_star_rating %></td></tr>
+            <tr class="success"><td><strong><%= model_class.human_attribute_name(:status) %>:</strong></td>
+            <td><%= @author_book.status %></td></tr>
+            <tr class="active"><td><strong><%= model_class.human_attribute_name(:payment_status) %>:</strong></td>
+            <td><%= @author_book.payment_status %></td></tr>
+
+            <tr class="success">
+              <td><strong><%= "Regular price" %>:</strong></td>
+              <td><%= @author_book.rb_price %></td>
+            </tr>
+
+            <tr class="active">
+              <td><strong><%= "Promotional price" %>:</strong></td>
+              <td><%= @author_book.pb_price %></td>
+            </tr>
+
+            <tr class="success">
+              <td><strong><%= "Genre price" %>:</strong></td>
+              <td><%= @author_book.genre_price %></td>
+            </tr>
+
+            <tr class="active">
+              <td></td>
+              <td></td>
+            </tr>
+            <tr class="success">
+                <td><strong><%= "Links to other retailers" %>:</strong></td>
+                <td></td>
+              </tr>
+            <% @retailers = @author_book.retailers %>
+              <% @retailers.each do |retailer| %>
+              <tr>
+                <td><strong><%= retailer.retailer_name %>:</strong></td>
+                <td> <%= link_to "#{retailer.retailer_link}","//#{retailer.retailer_link}",:target=>"blank"%></td>
+              </tr>
+
+              <% end %>  
+            </table>
+            <% if @author_book.additional_information.present? %>
+              <div>
+                <h4>Additional Information</h4>
+                <p><%= @author_book.additional_information %></p>
+              </div>
+            <% end %>    
+          <!-- </dl> -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+      
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div>

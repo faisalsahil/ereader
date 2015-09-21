@@ -1,0 +1,27 @@
+
+<div class="well">
+<%= form_for @mclist do |f| %>
+     <% i = 0 %>
+      <%= f.fields_for :pricings, @pricings do |builder| %>
+        <%= builder.hidden_field :group_name, value: "#{@arr[i][:name]}" %>
+        <%#= builder.hidden_field :group_id, value: "#{@arr[i][:id]}" %>
+       <div class="control-group">
+               <%= builder.label "#{@arr[i][:name]}", :clss=>"control-label" %>
+          <div class="controls">
+          	   <%= builder.text_field :tier_1, :placeholder=>"Enter $ tier 1" %>
+               <%= builder.text_field :tier_2, :placeholder=>"Enter $ tier 2" %>
+                <%= builder.text_field :tier_3, :placeholder=>"Enter $ tier 3" %>   </div> 
+      </div>
+      <% i = i+1  %>
+
+      <% end %>
+
+      <div class="form-actions">
+              <%= f.submit "Submit", :class=>"btn btn-primary" %>
+              <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                  new_pricing_path, :class => 'btn' %>
+      </div>
+<% end %>
+</div>
+
+

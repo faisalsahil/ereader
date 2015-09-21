@@ -1,0 +1,43 @@
+<%- model_class = Pricing -%>
+<div class="alert alert-info">
+  <h3>Pricings</h3>
+</div>
+<%= will_paginate @pricings %>
+<div>
+  <b>Grouping :</b> <%= grouping1 %>
+</div>
+<br/>
+<% if @pricings.present? %>
+  <table class="table table-striped table-bordered">
+    <thead style="background-color: lightgrey;">
+      <tr>
+        <th><%= "Genre" %></th>
+        <th><%= "Free" %></th>
+        <th><%= "$.01 - $2.98" %></th>
+        <th><%= "$2.99 and up" %></th>
+        <th><%=t '.actions', :default => t("helpers.actions") %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @pricings.each do |pricing| %>
+        <tr>
+          <td><%= pricing.group_name %></td>
+          <td><%= "¢ #{pricing.tier_1}" %></td>
+          <td><%= "¢ #{pricing.tier_2}" %></td>
+          <td><%= "¢ #{pricing.tier_3}" %></td>
+          <td>
+            <%= link_to t('.edit', :default => t("helpers.links.edit")),
+                        edit_pricing_path(pricing), :class => 'btn btn-mini' %>
+            <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+                        pricing_path(pricing),
+                        :method => :delete,
+                        :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) },
+                        :class => 'btn btn-mini btn-danger' %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+ <div class="alert alert-info">There is no record saved yet.</div>
+<% end %>

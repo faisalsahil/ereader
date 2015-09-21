@@ -1,0 +1,285 @@
+<style type="text/css">
+  
+  .op_div, .tier_select{
+    display: none;
+  }
+  .textarea_size{
+     width: 500px;
+     height: 150px;
+ }
+</style>
+<script type="text/javascript">
+  $(document).ready(function () {
+    $('#datetimepicker1').datetimepicker({
+      language: 'pt-BR'
+    });
+    $('#datetimepicker2').datetimepicker({
+      language: 'pt-BR'
+    });
+
+    $( ".datepicker" ).click(function() {
+      $(".bootstrap-datetimepicker-widget").css('display','none');
+    });
+
+    $( ".add-on" ).click(function() {
+      $(".datepicker").css('display','block');
+    });
+      
+      $(".payment-info").hide();
+
+      // $(".step-2").click(function(){
+      //   $(".author-book-form").hide();
+      //   $(".credit-card-fields").show();
+      //   $(".page-heading").hide();
+      //   $(".payment-info").show();
+      //   $(".genres-price-alert").text($(".tier_select").find('select').find('option:selected').text());
+
+      // });
+
+      // $(".step-1").click(function(){
+      //   $(".author-book-form").show();
+      //   $(".credit-card-fields").hide();
+      //   $(".page-heading").show();
+      //   $(".payment-info").hide();
+      // });
+
+      $(".pb_price").change(function(){
+
+        $("#genre_op").hide();
+          
+        if($(".pb_price").val() == 0)
+        {
+          $(".tier_select").show();
+
+            $(".tier_select").find('select').html($("#ter1_op_div").html());
+        }
+        else if($(".pb_price").val() >= 0.01 && $(".pb_price").val() <= 2.98)
+        {
+          $(".tier_select").show();
+
+          $(".tier_select").find('select').html($("#ter2_op_div").html());
+          
+        }
+        else if($(".pb_price").val() >= 2.99)
+        {
+          $(".tier_select").show();
+          $(".tier_select").find('select').html($("#ter3_op_div").html());
+        }
+      });
+
+      /////////////// card validation scripy here /////////////////////
+      $("#validate-and-submit-card-info").click(function(){
+      // alert($('.card_number').val());
+        $('#validate-and-submit-card-info').attr('disabled', true);
+        Stripe.setPublishableKey('pk_test_QVGIJySpKQMq5Fb67GwEibN4');
+
+        Stripe.card.createToken({
+            number: $('.card_number').val(),
+            cvc: $('.card-cvc').val(),
+            exp_month: $('#card_month').val(),
+            // exp_month: '12',
+            exp_year: $('#card_year').val()
+        }, stripeResponseHandler);
+
+        return false;
+     });
+
+    function stripeResponseHandler(status, response) {
+      if (response.error) {
+         alert(response.error.message);
+         $('#validate-and-submit-card-info').attr('disabled', false);
+      } else {
+          var form$ = $(".book-submission-form");
+          var token = response['id'];
+          form$.append($('<input type="hidden" name="author_book[payment_attributes][token]" />').val(token));
+          form$.submit();
+        }
+    }
+
+
+
+  });////// end of doc.ready
+</script>
+<% if flash[:notice].present? %>
+<div class="alert alert-success">
+    <%= flash[:notice] %>
+</div>
+<% end %>
+<div class="page-header page-heading">
+  <h3>Tell Us About Your Book</h3><br/>
+  <h6>all fields with * are required</h6>
+
+</div>
+
+<%= form_for @author_book,:url=>author_books_path, :html => { :class => 'form-horizontal book-submission-form' } do |f| %>
+   <% if @author_book.errors.any? %>
+    <div id="errorExplanation" class="alert alert-error">
+      <a class="close" data-dismiss="alert">&#215;</a>
+      <h4><%= pluralize(@author_book.errors.count, "error") %> prohibited this book from being saved:</h4>
+      <ul>
+      <% @author_book.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+    <%#= @author_book.errors.full_messages.first if @author_book.errors.any? %>
+     <!--  <div class="control-group alert alert-info">
+        <h4>Genres I'm interested in</h4><br/>
+        <div class="controls">
+          Genres:<%#= f.select(:genres, GENRES_CONSTANT::GENRES_TYPE) %>
+          Flat Price:<%#= f.select(:genres_flat_price, GENRES_CONSTANT::FLAT_PRICE) %>
+          Bargain Price:<%#= f.select(:genres_bargain_price, GENRES_CONSTANT::BARGAIN_PRICE) %>
+        </div>
+      </div> -->
+<div class="author-book-form">
+    <div class="well">
+      <h4>Author Info</h3>
+      <div class="control-group">
+        <%= f.label :name, :class => 'control-label' %>*
+          <div class="controls">
+              <%= f.text_field :name %>
+          </div>
+      </div>
+
+      <div class="control-group">
+              <%= f.label :email, :class => 'control-label' %>*
+          <div class="controls">
+              <%= f.text_field :email %>
+          </div>
+        </div>
+    </div>
+    <!--     =====================   Book Info ============================ -->
+    <div class="well">
+     <h4>Book Info</h4>
+        <div class="control-group ">
+            <%= f.label :title, :class => 'control-label' %>*
+          <div class="controls">
+            <%= f.text_field :title %>
+          </div>
+        </div>
+
+    <div class="control-group">
+          <%= f.label :author_name, :class => 'control-label' %>*
+      <div class="controls">
+          <%= f.text_field :author_name %>
+      </div>
+    </div>
+
+    <div class="control-group">
+              <%= f.label "Regular Book Price", :class => 'control-label' %>*
+          <div class="controls">
+              <%= f.text_field :rb_price,:placeholder=>"Enter price in $" %>
+          </div>
+    </div>
+
+    <div class="control-group">
+              <%= f.label "Promotional Book Price", :class => 'control-label' %>*
+          <div class="controls">
+              <%= f.text_field :pb_price ,:placeholder=>"Enter price in $", :class=>"pb_price"%>
+          </div>
+    </div>
+
+    <div id="genre_op">
+      <%= f.label "Genre:" , :class => 'control-label' %>*
+        <div class="controls">
+          <%= f.select :genres,options_for_select(Pricing.all.map { |pr| ["#{pr.group_name} ($#{pr.tier_3})", pr.group_name] }),prompt: "Select Genres", :class=>'select-genres' %>
+        </div>
+    </div>
+   
+      <div id="ter1_op_div" class="op_div">
+        <option value="">Select Genre</option>
+        <%= options_for_select(Pricing.all.map { |pr| ["#{pr.group_name} ($#{pr.tier_1})", pr.group_name] }) %>
+      </div>
+      <div id="ter2_op_div" class="op_div">
+        <option value="">Select Genre</option>
+        <%= options_for_select(Pricing.all.map { |pr| ["#{pr.group_name} ($#{pr.tier_2})", pr.group_name] }) %>
+      </div>
+      <div id="ter3_op_div" class="op_div">
+        <option value="">Select Genre</option>
+        <%= options_for_select(Pricing.all.map { |pr| ["#{pr.group_name} ($#{pr.tier_3})", pr.group_name] }) %>
+      </div>
+
+
+
+    <div class="control-group tier_select">
+          <%= f.label "Genre:", :class => 'control-label' %>*
+      <div class="controls">
+            <%= f.select :genres,options_for_select(Pricing.all.map { |pr| ["#{pr.group_name} ($#{pr.tier_3})", pr.group_name] }),prompt: "Select Genres", :class=>'select-genres' %>
+      </div>
+    </div>
+
+
+    <div class="control-group">
+          <%= f.label "Amazon link", :class => 'control-label' %>*
+      <div class="controls">
+          <%= f.text_field :amazon_link %>
+      </div>
+    </div>
+    
+    <div class="control-group">
+          <%= f.label "Amazon star rating", :class => 'control-label' %>*
+      <div class="controls">
+          <%= f.text_field :amazon_star_rating %>
+      </div>
+    </div>
+    <div class="control-group">
+          <%= f.label "Additional Information", :class => 'control-label' %>
+      <div class="controls ">
+          <%= f.text_area :additional_information, :class=>"textarea_size", :placeholder=>"Write Additional Information Here." %>
+      </div>
+    </div>
+    <!-- ========= Link retailers form field ================== -->
+    <div class="well">
+      <h4>Links to other retailers</h4>
+        <% index = 0 %>
+          <%= f.fields_for :retailers, @retailer do |ret| %>
+            
+              <div class="control-group">
+                <%= ret.label "#{@ret[index]}", :class => 'control-label' %>
+                <%= ret.hidden_field :retailer_name, :value => "#{@ret[index]}" %>
+                <div class="controls">
+                  <%= ret.text_field :retailer_link %>
+                </div>
+              </div> 
+            <% index = index + 1%>
+          <% end %>
+    </div>
+    <!-- =============   Form includes preferred inclusion date and whether it's flexible  =========== -->
+  <div class="well">
+    <h4>Date Info</h3>
+     <div class="control-group">
+          <%= f.label "Preferred date", :class => 'control-label' %>
+      <div class="controls">
+        <div id="datetimepicker1" class="input-append date">
+          <%= f.text_field :preferred_start_date, data: {format: "MM/dd/yyyy"}, :placeholder=>"Start date" %>
+          <span class="add-on">
+            <i data-time-icon="icon-date" data-date-icon="icon-calendar">
+            </i>
+          </span>
+        </div>
+        <div id="datetimepicker2" class="input-append date">
+          <%= f.text_field :preferred_end_date, data: {format: "MM/dd/yyyy"}, :placeholder=>"End date" %>
+          <span class="add-on">
+            <i data-time-icon="icon-date" data-date-icon="icon-calendar">
+            </i>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="control-group">
+          <%= f.label "Is this date flexible?", :class => 'control-label' %>
+          <div class="controls">
+            <%#= f.check_box :flexible %>
+            <%= f.select(:flexible, GENRES_CONSTANT::DATE_FLEXIBLE) %>
+          </div>
+    </div>
+  </div>
+  <%= f.button :submit,:class => 'btn btn-primary' %>
+  <!-- <button type="button" class = 'btn btn-primary step-2'>Next Step</button> -->
+</div>
+</div>
+<% end %>
+
+
+

@@ -1,0 +1,28 @@
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#get-template').click(function (e) {
+            e.preventDefault();
+            var keyVal = $("#key_mandrill_key").val();
+            var origin = window.location.origin;
+            window.location.href = origin + '/key_mandrills/load_template?key=' + keyVal;
+        });
+
+        $(".change-mandrill-api").click(function () {
+            $("#setting-mandrill-api").removeClass('hidden');
+        });
+        $("#close-mandrill-form").click(function () {
+            $("#setting-mandrill-api").addClass('hidden');
+        });
+    });
+</script>
+
+
+
+<%= form_for @key_mandrill, :url=> key_mandrills_path, :html => { :class => 'form-horizontal' } do |f| %>
+    <div class="">
+      <%= f.label "Api_key:", :class=>"control-label"  %>
+      <%= f.text_field :key, :placeholder=>"Enter Key" %>
+    
+      <%= f.submit :submit, :class => 'btn btn-primary', :value=>"Create Mandrill API" %>
+    </div>  
+<% end %>

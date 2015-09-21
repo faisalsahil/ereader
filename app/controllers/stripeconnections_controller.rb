@@ -1,0 +1,2 @@
+class StripeconnectionsController < ApplicationController
+end

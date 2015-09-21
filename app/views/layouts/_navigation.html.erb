@@ -1,0 +1,61 @@
+<% if current_user.present? %>
+    <%= link_to "EreaderSync", root_path, :class => 'brand' %>
+    <ul class="nav">
+
+      <% if user_signed_in? && current_user.user_type=="admin" %>
+          <!-- <li>
+            <%= link_to 'Admin', "#" %>
+          </li> -->
+          <li>
+            <%= link_to 'Settings', new_apisetting_path %>
+          </li>
+          <li>
+          <% if Pricing.first.present? %>
+            <%= link_to 'Pricing', pricings_path %>
+          <% else %>
+            <%= link_to 'Pricing', new_pricing_path %>
+          <% end %>
+          </li>
+          <li>
+            <%= link_to 'Submissions', author_books_path %>
+          </li>
+          <li>   
+            <!-- scheduleings -->
+            <%= link_to 'Scheduling', schedule_range_scheduleings_path %>
+          </li>
+          <li>
+            <!-- report_scheduleings_path -->
+            <%= link_to 'Reports', report_range_scheduleings_path %>
+          </li>
+
+      <% end %>
+      <%# if user_signed_in? && current_user.user_type !="admin" %>
+          <!-- <li> -->
+            <%#= link_to 'Manage', "#" %>
+          <!-- </li> -->
+           <!-- <li> -->
+            <%#= link_to 'Submissions', "#" %>
+          <!-- </li> -->
+      <%# end %>
+      <% if user_signed_in? %>
+          <% if current_user.user_type=="admin" %>
+            <li class="offset3">
+          <% else %>
+              <li class="offset8">
+          <% end %>
+          <%= link_to 'Logout', destroy_user_session_path , method: :delete %>
+          </li>
+      <% else %>
+        <li  class="offset8">
+        <%= link_to 'Login', new_user_session_path, :class=>"pull-right" %>
+        </li>
+      <% end %>
+      <% if user_signed_in? %>
+        <li>
+        <%= link_to 'Edit account', edit_user_registration_path, :class=>"pull-right" %>
+        </li>
+      <% end %>
+    </ul>
+<% else %>
+   <%= link_to "Ereader News Today Book Submission", root_path, :class => 'brand' %>
+<% end %>

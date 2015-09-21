@@ -1,0 +1,233 @@
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#get-list').click(function (e) {
+            e.preventDefault();
+            var keyVal = $("#apisetting_api_key").val();
+            var origin = window.location.origin;
+            window.location.href = origin + '/apisettings/load_list?key=' + keyVal;
+        });
+        $('#get-grouping').click(function (e) {
+            e.preventDefault();
+            var keyVal = $("#mclist_list_id").val();
+            var origin = window.location.origin;
+            window.location.href = origin + '/apisettings/load_groups?key=' + keyVal;
+        });
+
+        $(".change-api").click(function () {
+            $("#setting-api").removeClass('hidden');
+        });
+        $("#close-form").click(function () {
+            $("#setting-api").addClass('hidden');
+        });
+
+        $(".change-mandrill-api").click(function () {
+            $("#setting-mandrill-api").removeClass('hidden');
+        });
+        $("#close-mandrill-form").click(function () {
+            $("#setting-mandrill-api").addClass('hidden');
+        });
+
+
+        $(".change-smtp-api").click(function () {
+            $("#setting-smtp-api").removeClass('hidden');
+        });
+        $("#close-smtp-form").click(function () {
+            $("#setting-smtp-api").addClass('hidden');
+        });
+
+        $(".change-mandrill-setting").click(function () {
+            $("#mandrill-setting").removeClass('hidden');
+        });
+        $("#close-mandrill-setting-form").click(function () {
+            $("#mandrill-setting").addClass('hidden');
+        });
+
+       // /////  stripe change setting  ////////////////
+        $(".change-stripe-setting").click(function () {
+            $(".stripe-connect-button").removeClass('hidden');
+        });
+        $("#close-stripe-form").click(function () {
+            $(".stripe-connect-button").addClass('hidden');
+        });
+        // /////  wordpress path change setting  ////////////////
+        $(".change-xmlrpc-setting").click(function () {
+            $(".wordpress-change-path").removeClass('hidden');
+        });
+        $("#close-wordpress-form").click(function () {
+            $(".wordpress-change-path").addClass('hidden');
+        });
+        //////////  list-grouping setting /////////
+        // /////  stripe change setting  ////////////////
+        // $(".change-list-grouping").click(function () {
+        //     $("#setting-list_grouping").removeClass('hidden');
+        // });
+        // $("#close-list-grouping-form").click(function () {
+        //     $("#setting-list_grouping").addClass('hidden');
+        // });
+        $('.change-list-grouping').click(function (e) {
+            if(confirm('If you want to change the list then we delete all existing records. Are you sure?'))
+            {
+              e.preventDefault();
+              var origin = window.location.origin;
+              window.location.href = origin + '/mclists/modify_list';
+            }
+        });
+
+
+
+    });
+</script>
+
+<h3>Mailchimp API</h3>
+<div class="alert alert-success row-fluid" style="width: 809px">
+  <% if @api_key.present? %>
+      <b><%= "Api Key:" %></b><%= "#{@api_key}" %>
+  <% end %>
+  <br/>
+  <% if @list_name.present? %>
+      <b><%= "List Name:" %></b><%= "#{@list_name}" %>
+  <% end %>
+  <div class="pull-right">
+    <a href="javascript:void(0);" class="change-api">change</a>
+  </div>
+</div>
+<div id="setting-api" class="hidden row-fluid  well" style="padding: 24px 35px 2px 14px !important; width:809px;">
+
+    <%= form_for @apisetting, :html => {:class => 'form-horizontal'} do |f| %>
+        <% if @api_key.present? %>
+            <b><%= "Api Key: " %></b><%= f.text_field :api_key, :value => @api_key %>
+        <% else %>
+            <%= f.text_field :api_key,:placeholder=>"MC Key" %>
+        <% end %>
+        <%= f.submit :submit, :class => 'btn btn-primary', :value => "Update" %>
+        <a id="close-form" class="icon-remove pull-right"></a>
+    <% end %>
+</div>
+
+<!-- =========================== MC list And Grouping =================== -->
+<h3>Select List</h3>
+<% if !@mclist.new_record? %>
+  <div class="well alert alert-success" style="width: 809px;">
+    <% if @mclist.list_name.present? %>
+          <b><%= "List Name:" %></b><%= "#{@mclist.list_name}" %>
+        <% end %>
+        <br/>
+    <% if @mclist.grouping_name.present? %>
+          <b><%= "Grouping Name:" %></b><%= "#{@mclist.grouping_name}" %>
+        <% end %>
+        <br/>
+      <div class="pull-right">
+          <a href="javascript:void(0);" class="change-list-grouping">change</a>
+      </div>
+        <br/>
+  </div>
+<% else %>
+  <%= render :partial => "listGroup" %>
+<% end %>
+
+
+
+<!-- =========================== Mandrill Api  ========================== -->
+<h3>Mandrill API</h3>
+<% if !@key_mandrill.new_record? %>
+    <div class="alert alert-success row-fluid" style="width: 809px;">
+      <% if @key_mandrill.key.present? %>
+          <b><%= "Api Key:" %></b><%= "#{@key_mandrill.key}" %>
+          <br/>
+      <% end %>
+      <%# if @key_mandrill.template_name.present? %>
+          <b><%#= "Template Name:" %></b><%#= "#{@key_mandrill.template_name}" %>
+      <%# end %>
+      <br/>
+      <div class="pull-right">
+        <a href="javascript:void(0);" class="change-mandrill-api">change</a>
+      </div>
+    </div>
+      <%= render :partial => "mandrill_edit_form" %>
+<% else %>
+    <div class="well width">
+      <%= render "mandrill_new_form" %>
+    </div>
+<% end %>
+
+<!-- =================== Mandrill Setting ============================ -->
+<% if @list_template.present? %>
+  <h3>Mandrill Settings</h3>
+  <% if !@mandrill_setting.new_record? %>
+      <div class="alert alert-success row-fluid" style="width: 809px;">
+        <b><%= "Approval Email Template:" %></b><%= "#{@mandrill_setting.apr_tempate}" %><br/>
+        <b><%= "Rejection Email Template:" %></b><%= "#{@mandrill_setting.rem_template}" %><br/>
+        <b><%= "From Name:" %></b><%= "#{@mandrill_setting.from_name}" %><br/>
+        <b><%= "From Email:" %></b><%= "#{@mandrill_setting.from_email}" %><br/>
+        <div class="pull-right">
+          <a href="javascript:void(0);" class="change-mandrill-setting">change</a>
+        </div>
+      </div>
+      <%= render :partial => "mandrill_setting_edit_form" %>
+  <% else %>
+      <div class="well width">
+        <%= render "mandrill_setting_new_form" %>
+      </div>
+  <% end %>
+<% end %>
+
+
+<!-- =======================  wordpress path ============================== -->
+  <h3>WordPress URL</h3>
+  <% if !@xmlrpc.new_record? %>
+     <div class="alert alert-success row-fluid" style="width: 809px;">
+          <b><%= "WordPress Path:" %></b><%= "#{@xmlrpc.path}" %>
+          <br/>
+      <br/>
+      <div class="pull-right">
+        <a href="javascript:void(0);" class="change-xmlrpc-setting">change</a>
+      </div>
+    </div>
+    <div class="well wordpress-change-path hidden" style="width: 818px;">
+      <a id="close-wordpress-form" class="icon-remove pull-right"></a>
+      <%= form_for @xmlrpc,:url=>xmlrpc_path(@xmlrpc), :html => {:class => 'form-horizontal'} do |f| %>
+            <b><%= "WordPress Path: "%></b><%= f.text_field :path %>
+        <%= f.submit :submit, :class => 'btn btn-primary', :value => "Update" %>
+    <% end %>
+    </div>
+  <% else %>
+    <div class="well">
+         <%= form_for @xmlrpc,:url=>xmlrpcs_path, :html => {:class => 'form-horizontal'} do |f| %>
+            <b><%= "WordPress Path: "%></b><%= f.text_field :path %>
+        <%= f.submit :submit, :class => 'btn btn-primary', :value => "Submit" %>
+    <% end %>  
+    </div>
+  <% end %>
+
+  
+<!-- ======================  Stripe ======================================== -->
+<h3>Connect with Stripe</h3>
+<% if !@stripe.new_record? %>
+    <div class="alert alert-success row-fluid" style="width: 809px;">
+      
+          <b><%= "Access Token:" %></b><%= "#{@stripe.access_token}" %>
+          <br/>
+           <br/>
+      <div class="pull-right">
+        <a href="javascript:void(0);" class="change-stripe-setting">change</a>
+      </div>
+    </div>
+    <div class="well stripe-connect-button hidden" style="width: 818px;">
+      <a id="close-stripe-form" class="icon-remove pull-right"></a>
+     <a href="https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_2oSitOgzHYdy3FqmGsOsREoK8pN86BdX" class='btn btn-primary' >Connect with Stripe</a>
+    </div>
+<% else %>
+  <div class="well">
+     <a href="https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_2oSitOgzHYdy3FqmGsOsREoK8pN86BdX" class='btn btn-primary' >Connect with Stripe</a>
+  </div>
+<% end %>
+
+
+   
+
+
+
+
+
+
+

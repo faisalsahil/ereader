@@ -1,0 +1,40 @@
+<script type="text/javascript" >
+$(document).ready(function () {
+  	$("#validate-and-submit-card-info").click(function(){
+  		// alert($('.card_number').val());
+  		$('#validate-and-submit-card-info').attr('disabled', true);
+        Stripe.setPublishableKey('pk_test_QVGIJySpKQMq5Fb67GwEibN4');
+
+      Stripe.card.createToken({
+          number: $('.card_number').val(),
+          cvc: $('.card-cvc').val(),
+          exp_month: $('#card_month').val(),
+          // exp_month: '12',
+          exp_year: $('#card_year').val()
+   		}, stripeResponseHandler);
+
+   		return false;
+     });
+
+  	function stripeResponseHandler(status, response) {
+    if (response.error) {
+       alert(response.error.message);
+       $('#validate-and-submit-card-info').attr('disabled', false);
+    } else {
+        var form$ = $(".payment-form");
+        var token = response['id'];
+        form$.append($('<input type="hidden" name="payment[token]" />').val(token));
+        form$.submit();
+    	}
+	}
+  
+
+});
+</script>
+
+<%- model_class = Payment -%>
+<div class="page-header">
+  <h3>Payment Info</h3>
+  
+</div>
+<%= render :partial => 'form' %>
